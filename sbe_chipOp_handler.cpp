@@ -33,10 +33,11 @@ std::vector<sbe_word_t> writeToFifo(const char* devPath,
     //Open the device and obtain the file descriptor associated with it.
     FileDescriptor fileFd(devPath, (O_RDWR | O_NONBLOCK));
 
+    printf("Polling to write\n");
     //Wait for FIFO device and perform write operation
     struct pollfd poll_fd = {};
     poll_fd.fd = fileFd();
-    poll_fd.events = POLLOUT | POLLERR;
+    poll_fd.events = POLLOUT | POLLERR | POLLHUP | POLLNVAL | POLLRDHUP;
 
     int rc = 0;
     if ((rc = poll(&poll_fd, 1, -1)) < 0)
@@ -52,6 +53,7 @@ std::vector<sbe_word_t> writeToFifo(const char* devPath,
         errMsg << "POLLERR while waiting for writeable FIFO,errno:" << errno;
         throw std::runtime_error(errMsg.str().c_str());
     }
+    printf("POLL to write completed, Will attempt to write\n");
     auto bytesToWrite = (cmdBufLen * WORD_SIZE);
     //Perform the write operation
     len = write(fileFd(), cmdBuffer, bytesToWrite);
@@ -62,6 +64,7 @@ std::vector<sbe_word_t> writeToFifo(const char* devPath,
                "returned= " << len << " errno=" << errno;
         throw std::runtime_error(errMsg.str().c_str());
     }
+    printf("Write complete!! will POLL for READ\n");
     //Wait for FIFO device and perform read operation
     poll_fd.fd = fileFd();
     poll_fd.events = POLLIN | POLLERR;
@@ -78,12 +81,13 @@ std::vector<sbe_word_t> writeToFifo(const char* devPath,
         errMsg << "POLLERR while waiting for readable FIFO,errno:" << errno;
         throw std::runtime_error(errMsg.str().c_str());
     }
+    printf("Poll for read completed\n");
     //Derive the total read length which should include the FFDC, which SBE
     //returns in case of failure.
     size_t totalReadLen = respBufLen + MAX_FFDC_LEN_IN_WORDS;
     //Create a temporary buffer
     std::vector<sbe_word_t> buffer(totalReadLen);
-
+printf("Will attempt to read\n");
     auto bytesToRead = (totalReadLen * WORD_SIZE);
     len = read(fileFd(), buffer.data(), bytesToRead);
     if (len < 0)

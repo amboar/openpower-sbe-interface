@@ -62,6 +62,7 @@ uint64_t read(const char* devPath,
     const size_t respLength = RESP_HEADER_LEN + READ_RESP_LENGTH ;
     std::array<sbe_word_t, respLength> response = {};
 
+    printf("Calling invokeSBEChipOperation()\n");
     //Write the command buffer to the SBE FIFO and obtain the response from the
     //SBE FIFO device.This interface will parse the obtained SBE response and
     //any internal SBE failures will be communicated via exceptions
@@ -107,3 +108,9 @@ void write(const char* devPath,
 } // namespace scom
 } // namespace sbe
 } // namespace openpower
+int main()
+{
+    printf("%.16llx\n", openpower::sbe::scom::read("/dev/sbefifo1", 0x201007));
+ //   openpower::sbe::scom::write("/dev/abc/def",0x201007,0x1122334455667788);
+    return 0;
+}

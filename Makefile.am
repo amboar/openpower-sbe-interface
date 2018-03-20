@@ -1,15 +1,12 @@
-include_HEADERS = \
-    sbe_interfaces.hpp
+AM_DEFAULT_SOURCE_EXT = .cpp
 
-noinst_HEADERS = \
-    sbe_chipOp_handler.hpp \
-    file.hpp
+sbin_PROGRAMS = sbei_inter
 
-libsbeinterfacedir = ${libdir}/sbe-interface
-libsbeinterface_LTLIBRARIES = libsbeinterface.la
+sbei_inter_SOURCES = \
+	sbe_interfaces.cpp \
+	sbe_chipOp_handler.cpp 
 
-libsbeinterface_la_SOURCES = \
-    sbe_interfaces.cpp \
-    sbe_chipOp_handler.cpp
+#noBUILT_SOURCES =  \
+#	sbe_interfaces.hpp \
+#	sbe_chipOp_handler.hpp
 
-libsbeinterface_la_LDFLAGS = -version-info 0:0:0 -shared

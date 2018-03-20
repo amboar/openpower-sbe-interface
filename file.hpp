@@ -63,6 +63,7 @@ class FileDescriptor
 
         int operator()()
         {
+            printf("\nReturing the FD as %d\n",fd);
             return fd;
         }
 };
