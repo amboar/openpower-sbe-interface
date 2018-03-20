@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <iostream>
 #include <stdexcept>
 #include <array>
@@ -110,7 +111,7 @@ void write(const char* devPath,
 } // namespace openpower
 int main()
 {
-    printf("%.16llx\n", openpower::sbe::scom::read("/dev/sbefifo1", 0x201007));
+    printf("%.16" PRIx64 "\n", openpower::sbe::scom::read("/dev/sbefifo1", 0x201007));
  //   openpower::sbe::scom::write("/dev/abc/def",0x201007,0x1122334455667788);
     return 0;
 }
